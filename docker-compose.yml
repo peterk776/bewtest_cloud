@@ -1,0 +1,24 @@
+version: "3.7"
+
+services:
+  selenium_chrome:
+    image: selenium/standalone-chrome:4.1.1-20211217
+    container_name: bewtest-selenium-chrome
+    ports:
+      - 4444:4444
+      - 7900:7900
+    build:
+      context: .
+      shm_size: '2gb'
+    dns: 
+      - 192.168.1.61
+  test_app:
+    image: bewtest:latest
+    build:
+      context: .
+    dns: 
+      - 192.168.1.61
+    ports:
+      - 8888:8888
+    depends_on:
+      - "selenium_chrome"
