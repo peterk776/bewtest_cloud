@@ -69,7 +69,7 @@ public class PositionTest {
         driver.findElement(By.name("41475411-8483-490b-943f-287263a83bce")).sendKeys("pkolarik@pi-ag.com");
         System.out.println("click bewerben button ...");
         driver.findElement(By.xpath("//div[@data-uin=\"btn-Jetzt_bewerben\"]")).click();
-        System.out.println("waiting for bewerbung result with timeout 1 seconds ...");
+        System.out.println("waiting for bewerbung result with timeout 15 seconds ...");
         TimeUnit.SECONDS.sleep(15);
         String checkText = driver.findElement(By.xpath("//div[@class=\"BW-WebPositionPage\"]/div/h2")).getText();
         System.out.println("doTest ends");
