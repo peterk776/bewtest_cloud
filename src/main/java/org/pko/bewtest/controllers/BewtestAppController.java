@@ -1,6 +1,8 @@
 package org.pko.bewtest.controllers;
 
+import org.pko.bewtest.data.TestStatus;
 import org.pko.bewtest.testcases.PositionTest;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -29,8 +31,21 @@ public class BewtestAppController {
         return "Hi!";
     }
 
+    @RequestMapping("/checkSinglePositionCloud")
+    public ResponseEntity<TestStatus> checkSinglePositionCloud(@RequestParam("remoteDriverUrl") String remoteDriverUrl, @RequestParam("candidateHost") String candidateHost,
+                                                               @RequestParam("companyEid") String companyEid, @RequestParam("positionId") String positionId) {
+
+        candidateHost = candidateHost == null ? CANDIDATE_HOST : candidateHost;
+        companyEid = companyEid == null ? COMPANY_EID : companyEid;
+        positionId = positionId == null ? POSITION_ID : positionId;
+
+        String appUrl = "https://" + candidateHost +"/bewerber-web/?companyEid=" + companyEid + "#position,id=" + positionId;
+
+        return ResponseEntity.ok(PositionTest.execute(remoteDriverUrl, appUrl));
+    }
+
     @RequestMapping("/checkSinglePosition")
-    String checkSinglePosition(@RequestParam("browserHost") String browserHost, @RequestParam("candidateHost") String candidateHost,
+    public ResponseEntity<TestStatus> checkSinglePosition(@RequestParam("browserHost") String browserHost, @RequestParam("candidateHost") String candidateHost,
                                @RequestParam("companyEid") String companyEid, @RequestParam("positionId") String positionId) {
 
         browserHost = browserHost == null ? SELENIUM_BROWSER_HOST : browserHost;
@@ -38,8 +53,10 @@ public class BewtestAppController {
         companyEid = companyEid == null ? COMPANY_EID : companyEid;
         positionId = positionId == null ? POSITION_ID : positionId;
 
-        PositionTest.execute(browserHost, candidateHost, companyEid, positionId);
-        return "done!";
+        String appUrl = "https://" + candidateHost +"/bewerber-web/?companyEid=" + companyEid + "#position,id=" + positionId;
+        String remoteWebDriverUrl = "http://" + browserHost + ":4444/wd/hub/";
+
+        return ResponseEntity.ok(PositionTest.execute(remoteWebDriverUrl, appUrl));
     }
 
 }
