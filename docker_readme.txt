@@ -1,3 +1,4 @@
+# is only source base for github
 docker image build -t selemium-first-test:latest .
 docker container run --dns 192.168.118.1 selemium-first-test:latest
 

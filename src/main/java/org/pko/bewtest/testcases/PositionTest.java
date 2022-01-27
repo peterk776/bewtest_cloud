@@ -1,11 +1,12 @@
 package org.pko.bewtest.testcases;
 
+import com.google.common.collect.ImmutableMap;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.CapabilityType;
+import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.pko.bewtest.data.TestStatus;
 import org.slf4j.Logger;
@@ -30,9 +31,23 @@ public class PositionTest {
     public static TestStatus execute(String remoteWebDriverUrl, String appUrl) {
         WebDriver driver = null;
         try {
-            ChromeOptions opt = new ChromeOptions();
-            opt.setCapability(CapabilityType.SUPPORTS_NETWORK_CONNECTION, true);
-            driver = new RemoteWebDriver(new URL(remoteWebDriverUrl), opt);
+
+            LOGGER.info("executing tests with:");
+            LOGGER.info("remote driver url {} ", remoteWebDriverUrl);
+            LOGGER.info("app url {} ", appUrl);
+
+            DesiredCapabilities capabilities = new DesiredCapabilities();
+            capabilities.setCapability(CapabilityType.SUPPORTS_NETWORK_CONNECTION, true);
+            // selenoid starts
+            capabilities.setCapability("browserName", "UNKNOWN");
+            capabilities.setCapability("browserVersion", "");
+            capabilities.setCapability("selenoid:options", ImmutableMap.of(
+                    "enableVNC", true,
+                    "enableVideo", true
+            ));
+            // selenoid ends
+            driver = new RemoteWebDriver(new URL(remoteWebDriverUrl), capabilities);
+
             driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
             LOGGER.info("Connecting to " + appUrl);
             driver.get(appUrl);
