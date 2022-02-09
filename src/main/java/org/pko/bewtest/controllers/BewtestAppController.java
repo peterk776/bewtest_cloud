@@ -1,4 +1,4 @@
-package org.pko.bewtest.controllers;
+package org.pko.bewtest.rest.controllers;
 
 import org.pko.bewtest.data.TestStatus;
 import org.pko.bewtest.testcases.PositionTest;
