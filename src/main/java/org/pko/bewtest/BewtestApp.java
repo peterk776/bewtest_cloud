@@ -3,6 +3,7 @@ package org.pko.bewtest;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
  * Rest app performing UI test of P&I Candidate application, with browser in docker container, controlled by Selenium Remote Web Driver.
@@ -11,9 +12,12 @@ import org.springframework.context.annotation.ComponentScan;
  *
  * todo:
  * - add security
+ * - do configuration handling threadsafe if necessary, currently is not
+ * - implement tests
  */
 
 @SpringBootApplication
+@EnableScheduling
 @ComponentScan//(basePackages = {"org.pko.bewtest.*", "org.pko.bewtest", "org.pko.bewtest.handler", "org.pko.bewtest.configuration", "org.pko.bewtest.execute", " org.pko.bewtest.rest.controllers"})
 public class BewtestApp {
 

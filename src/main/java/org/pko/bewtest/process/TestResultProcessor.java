@@ -22,14 +22,14 @@ public final class TestResultProcessor<T extends TestConfigurationData> {
     @Autowired
     EmailServiceFactory emailServiceFactory;
 
-    public void process(TestResultResponse<T> result) {
+    public <T extends TestConfigurationData>  void process(TestResultResponse<T> result) {
 
         result.getResults().stream()
                 .filter(testResult -> TestResult.State.OK != testResult.getState())
                 .forEach(this::sendEmail);
     }
 
-    private void sendEmail(TestResult<T> testResult) {
+    private <T extends TestConfigurationData> void sendEmail(TestResult<T> testResult) {
         String subject;
         if (testResult instanceof BewerberTestResult) {
             subject = (testResult.getTarget() == null ) ? "Bewerbung test failed notification" : ("Bewerbung test failed notification, test " + testResult.getTarget());

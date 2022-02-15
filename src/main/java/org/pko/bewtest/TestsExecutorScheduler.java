@@ -1,7 +1,10 @@
 package org.pko.bewtest;
 
 import org.pko.bewtest.configuration.TestConfigurationData;
+import org.pko.bewtest.data.TestResult;
+import org.pko.bewtest.data.TestResultResponse;
 import org.pko.bewtest.handler.TestHandler;
+import org.pko.bewtest.process.TestResultProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,9 +13,11 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Collectors;
 
 /**
  * TestsProcessor
@@ -23,14 +28,17 @@ import java.util.concurrent.locks.ReentrantLock;
 
 @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
 @Component
-public class TestsExecutorScheduler {
+public class TestsExecutorScheduler<T extends TestConfigurationData> {
 
     private static final int TEST_EXECUTE_INTERVAL = 60; // in minutes
 
-    private final List<TestHandler<TestConfigurationData>> testHandlersList;
+    private final List<TestHandler<?>> testHandlersList;
 
     @Autowired
-    public TestsExecutorScheduler(List<TestHandler<TestConfigurationData>> testHandlersList) {
+    TestResultProcessor<T> resultProcessor;
+
+    @Autowired
+    public <T extends TestConfigurationData> TestsExecutorScheduler(List<TestHandler<?>> testHandlersList) {
         this.testHandlersList = testHandlersList;
     }
 
@@ -44,12 +52,8 @@ public class TestsExecutorScheduler {
     /**
      * Called every 60 minutes, with wait for previous processing
      */
-    @Scheduled(fixedRate = 60, timeUnit = TimeUnit.MINUTES)
+    @Scheduled(fixedRate = TEST_EXECUTE_INTERVAL, initialDelay = 1, timeUnit = TimeUnit.MINUTES)
     public void performTestsScheduled() {
-        perform();
-    }
-
-    public void performTestsRestCall() {
         perform();
     }
 
@@ -70,8 +74,13 @@ public class TestsExecutorScheduler {
     }
 
     private <T extends TestConfigurationData> void process(TestHandler<T> handler) {
-        // todo process test results
-        handler.configuration().getConfigurations().forEach(configuration -> handler.executor().execute(configuration));
+        List<TestResult<T>> list = handler.configuration().getConfigurations()
+                .stream()
+                .map(data -> handler.executor().execute(data))
+                .collect(Collectors.toList());
+
+        final TestResultResponse<T> body = new TestResultResponse<>(list, LocalDateTime.now());
+        resultProcessor.process(body);
     }
 
 }
