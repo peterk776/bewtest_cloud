@@ -7,7 +7,9 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.RemoteWebDriver;
-import org.pko.bewtest.data.TestStatus;
+import org.pko.bewtest.configuration.bewerber.BewerberTestConfigurationData;
+import org.pko.bewtest.data.BewerberTestResult;
+import org.pko.bewtest.data.TestResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,13 +23,14 @@ import java.util.concurrent.TimeUnit;
  * @author Peter Kolarik
  * @date 21.1.2022
  */
+@Deprecated
 public class PositionTest {
 
     public static final String BEWERBUNG_OK_TEXT = "Vielen Dank für Ihre Bewerbung";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PositionTest.class);
 
-    public static TestStatus execute(String remoteWebDriverUrl, String appUrl) {
+    public static TestResult<BewerberTestConfigurationData> execute(String remoteWebDriverUrl, String appUrl) {
         WebDriver driver = null;
         try {
 
@@ -44,15 +47,15 @@ public class PositionTest {
             boolean result = doTest(driver);
             if (result) {
                 LOGGER.info("Bewerbung sending test - OK");
-                return TestStatus.okStatus();
+                return new BewerberTestResult<>(null, TestResult.State.OK, "ok");
             }
             else {
                 LOGGER.warn("Bewerbung sending test - failed");
-                return TestStatus.failedStatus("bewerbung not loaded");
+                return new BewerberTestResult<>(null, TestResult.State.FAILED_TEST, "bewerbung not loaded");
             }
         } catch (Exception e) {
             LOGGER.warn("Problem running selenium test", e);
-            return TestStatus.failedStatus(e.toString());
+            return new BewerberTestResult<>(null, TestResult.State.ERROR, e.toString());
         } finally {
             if (driver != null)
                 driver.quit();

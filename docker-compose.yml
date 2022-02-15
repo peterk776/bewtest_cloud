@@ -23,3 +23,7 @@ services:
       - 8888:8888
     depends_on:
       - "selenium_chrome"
+    volumes:
+      - /dev/gcloud/bewtest:/opt/piag/bwetest
+volumes:
+  data:
