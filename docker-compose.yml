@@ -10,20 +10,18 @@ services:
     build:
       context: .
       shm_size: '2gb'
-    dns: 
-      - 192.168.1.61
   bewtest-app:
     image: bewtest:latest
     container_name: bewtest-app
     build:
       context: .
-    dns: 
-      - 192.168.1.61
     ports:
+      - 25:25
+      - 80:80
       - 8888:8888
     depends_on:
       - "selenium_chrome"
     volumes:
-      - /dev/gcloud/bewtest:/opt/piag/bwetest
+      - /home/peterk776/dev/bewtest:/opt/piag/bwetest
 volumes:
   data:
