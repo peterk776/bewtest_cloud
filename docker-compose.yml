@@ -22,6 +22,6 @@ services:
     depends_on:
       - "selenium_chrome"
     volumes:
-      - /home/peterk776/dev/bewtest/config:/opt/piag/bewtest
+      - /home/peterk776/dev/bewtest:/opt/piag/bewtest
 volumes:
   data:
