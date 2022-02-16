@@ -8,7 +8,7 @@ bewtestDir="bewtest_cloud"
 if [ -d $bewtestDir ]; then
   echo "using existing dir"
   cd bewtest_cloud
-  git checkout .
+  git pull
 else
   echo "File does not exist"
   mkdir bewtest_cloud
