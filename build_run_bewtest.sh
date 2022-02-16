@@ -1,7 +1,7 @@
 #!/bin/bash
 echo "build and run bewtest"
 
-bpath=/home/peterk776/dev/
+bpath=/home/peterk776/dev/bewtest
 cd $bpath
 
 bewtestDir="bewtest_cloud"
