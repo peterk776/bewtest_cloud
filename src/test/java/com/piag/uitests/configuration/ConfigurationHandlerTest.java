@@ -1,10 +1,10 @@
-package org.pko.bewtest.configuration;
+package com.piag.uitests.configuration;
 
 import com.google.common.collect.Lists;
 import com.google.gson.GsonBuilder;
 import org.assertj.core.api.Fail;
 import org.junit.jupiter.api.Test;
-import org.pko.bewtest.configuration.bewerber.BewerberTestConfigurationData;
+import com.piag.uitests.configuration.bewerber.BewerberTestConfigurationData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -57,7 +57,6 @@ class ConfigurationHandlerTest {
             // delete new created data
             testRemoveConfiguration(newData2);
             byte[] bytesAfterAddAndDelete = Files.readAllBytes(Paths.get(configBewFilePath));
-            System.out.println(configBewFilePath + " is writeable: " + Files.isWritable(Paths.get(configBewFilePath)));
             assertTrue("seems no data has been added in test config data " + configBewFilePath, bytesBeforeAdd.length !=  bytesAfterAdd.length);
             assertTrue("seems no data has been deleted in test config data " + configBewFilePath, bytesBeforeAdd.length ==  bytesAfterAddAndDelete.length);
 
@@ -71,6 +70,36 @@ class ConfigurationHandlerTest {
         BewerberTestConfigurationData deleted = handler.removeConfiguration(dataToRemove.getEndpointUrl(), dataToRemove.getCompanyEid(), dataToRemove.getPositionId());
         assertEquals("created and deleted test configuration data must be the same", dataToRemove, deleted);
         assertTrue("number of configurations after delete must be decreased of 1", handler.getConfigurations().size() == (sizeBeforeDelete - 1));
+    }
+
+    @Test
+    public void testReplaceConfiguration() {
+        try {
+            List<BewerberTestConfigurationData> list = handler.getConfigurations();
+            int sizeBeforeUpdate = list.size();
+            byte[] bytesBeforeAdd = Files.readAllBytes(Paths.get(configBewFilePath));
+            BewerberTestConfigurationData first = list.get(0);
+            // new test data
+            BewerberTestConfigurationData newData = new BewerberTestConfigurationData(first.getEndpointUrl(), first.getCompanyEid() + "2", first.getPositionId() + "2", first.getResponsible(), first.getFieldDataList());
+            String json = new GsonBuilder().create().toJson(newData);
+            BewerberTestConfigurationData newData2 = handler.addConfiguration(json);
+            assertTrue("configuration data must be equal", newData.equals(newData2));
+            assertTrue("configuration data must be persisted - check after update", handler.getConfigurations().size() == (sizeBeforeUpdate + 1));
+            // test add the same configuration
+            List<TestFieldData> fieldData3 = newData2.getFieldDataList();
+            fieldData3.add(new TestFieldData("test", TestFieldType.TEXT, "test"));
+            BewerberTestConfigurationData newData3 = new BewerberTestConfigurationData(newData2.getEndpointUrl(), newData2.getCompanyEid(), newData2.getPositionId(), newData2.getResponsible(), fieldData3);
+            BewerberTestConfigurationData newData3Test = handler.addConfiguration(new GsonBuilder().create().toJson(newData3));
+
+            assertTrue("configuration data must be equal", newData3.equals(newData3Test));
+            // must be the same size as after first add, because the last newData2 must bre replaced with newData3 (because of same endpointUrl, comppanyEid and positionId)
+            assertTrue("configuration data must be persisted - check after update", handler.getConfigurations().size() == (sizeBeforeUpdate + 1));
+
+            // delete new created data
+            testRemoveConfiguration(newData3);
+        } catch (IOException e) {
+            Fail.fail("failure: " + e);
+        }
     }
 
     @Test

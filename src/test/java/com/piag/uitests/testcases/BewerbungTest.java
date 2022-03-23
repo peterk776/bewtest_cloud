@@ -1,4 +1,4 @@
-package org.pko.bewtest.testcases;
+package com.piag.uitests.testcases;
 
 /**
  * BewPositionTestTest

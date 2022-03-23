@@ -1,4 +1,4 @@
-package org.pko.bewtest;
+package com.piag.uitests;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
